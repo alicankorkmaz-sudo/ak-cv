@@ -22,6 +22,8 @@ Ardından tarayıcıda aç:
 - Tek editor sekmesi (dosya tıklayınca içerik değişir)
 - Alt terminal paneli (`help`, `open projects`, `run`, `debug`, `stop`, `ls`, `whoami`, `clear`)
 - `Run` ile IDE sola kayar ve sağda Android emulator açılır, `Debug` ile debugger modu aktive olur
+- Emulator içinde `projects/profile/contact` mini ekranları arasında alt tab ve action butonlarıyla geçiş
+- `open projects`, `open profile`, `open contact` komutları emulator ekranını da senkron değiştirir
 - Status bar + canlı saat
 
 ## Kişiselleştirme

@@ -348,13 +348,58 @@
                   </div>
                   <div class="compose-toolbar">
                     <span>Alican Korkmaz</span>
-                    <span class="compose-mode-badge" id="composeModeBadge">RUN</span>
+                    <div class="compose-toolbar-right">
+                      <span class="compose-feature-tag" id="composeFeatureTag">Projects</span>
+                      <span class="compose-mode-badge" id="composeModeBadge">RUN</span>
+                    </div>
                   </div>
                   <main class="compose-content">
-                    <h3 id="composeOutputTitle">Hello from Compose</h3>
-                    <p id="composeOutputMeta">Rendered from MainActivity.kt</p>
-                    <button class="compose-cta" id="composeOutputCta">Open Projects</button>
+                    <section class="compose-screen is-active" data-feature-screen="projects">
+                      <h3>Featured Projects</h3>
+                      <p>Son 12 ayda optimize edilen Android işleri.</p>
+                      <article class="compose-card">
+                        <h4>Banking SuperApp</h4>
+                        <p>Cold start -34%, crash-free oturum %99.92.</p>
+                      </article>
+                      <article class="compose-card">
+                        <h4>Commerce Checkout</h4>
+                        <p>Payment conversion +11.8%, p95 API -41ms.</p>
+                      </article>
+                      <button type="button" class="compose-action" data-feature-action="profile">Open Profile</button>
+                    </section>
+                    <section class="compose-screen" data-feature-screen="profile">
+                      <h3>Profile</h3>
+                      <p>Senior Android Engineer • Kotlin • Compose</p>
+                      <div class="compose-profile-chip-wrap">
+                        <span class="compose-chip">Modularization</span>
+                        <span class="compose-chip">Performance</span>
+                        <span class="compose-chip">DX</span>
+                      </div>
+                      <article class="compose-card">
+                        <h4>Odak</h4>
+                        <p>Feature ownership, observability ve sürdürülebilir release pipeline.</p>
+                      </article>
+                      <button type="button" class="compose-action" data-feature-action="contact">Contact Me</button>
+                    </section>
+                    <section class="compose-screen" data-feature-screen="contact">
+                      <h3>Contact</h3>
+                      <p>Yeni ürün veya platform migration işleri için ulaş.</p>
+                      <article class="compose-card">
+                        <h4>E-posta</h4>
+                        <p>hello@alicankorkmaz.dev</p>
+                      </article>
+                      <article class="compose-card">
+                        <h4>GitHub</h4>
+                        <p>github.com/alicankorkmaz-sudo</p>
+                      </article>
+                      <button type="button" class="compose-action" data-feature-action="projects">Back to Projects</button>
+                    </section>
                   </main>
+                  <nav class="compose-bottom-nav" aria-label="Feature navigation">
+                    <button type="button" class="compose-nav-item is-active" data-feature-nav="projects">Projects</button>
+                    <button type="button" class="compose-nav-item" data-feature-nav="profile">Profile</button>
+                    <button type="button" class="compose-nav-item" data-feature-nav="contact">Contact</button>
+                  </nav>
                 </div>
               </div>
             </div>

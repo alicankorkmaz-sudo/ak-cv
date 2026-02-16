@@ -1,16 +1,22 @@
-const composePreviewSpec = {
-  title: 'Hello from Compose',
-  subtitle: 'Feature modules render through a shared app shell',
-  cta: 'Open Projects'
-};
-
-function buildMainActivityContent(spec) {
+function buildMainActivityContent() {
   return `package tech.alicankorkmaz.portfolio
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import tech.alicankorkmaz.portfolio.feature.projects.presentation.ProjectsRoute
+import tech.alicankorkmaz.portfolio.feature.profile.presentation.ProfileScreen
+import tech.alicankorkmaz.portfolio.feature.contact.presentation.ContactScreen
+
+enum class PortfolioDestination {
+  Projects,
+  Profile,
+  Contact,
+}
 
 class MainActivity : ComponentActivity() {
   override <span class="keyword">fun</span> onCreate(savedInstanceState: Bundle?) {
@@ -23,11 +29,22 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 <span class="keyword">fun</span> PortfolioApp() {
-  ProjectsRoute(
-    title = <span class="value">"${spec.title}"</span>,
-    subtitle = <span class="value">"${spec.subtitle}"</span>,
-    ctaLabel = <span class="value">"${spec.cta}"</span>,
-  )
+  var destination by rememberSaveable { mutableStateOf(PortfolioDestination.Projects) }
+
+  when (destination) {
+    PortfolioDestination.Projects -> ProjectsRoute(
+      title = <span class="value">"Featured Projects"</span>,
+      subtitle = <span class="value">"Shipped Android products with measurable impact"</span>,
+      ctaLabel = <span class="value">"Open Profile"</span>,
+      onOpenProfile = { destination = PortfolioDestination.Profile },
+    )
+    PortfolioDestination.Profile -> ProfileScreen(
+      onOpenContact = { destination = PortfolioDestination.Contact },
+    )
+    PortfolioDestination.Contact -> ContactScreen(
+      onBackToProjects = { destination = PortfolioDestination.Projects },
+    )
+  }
 }
 
 <span class="comment">// :app orchestrates feature modules; it should not own feature business logic.</span>`;
@@ -162,7 +179,7 @@ class PortfolioApplication : Application() {
   mainActivity: {
     tab: 'MainActivity.kt',
     status: ':app/src/main/java/tech/alicankorkmaz/portfolio/MainActivity.kt',
-    content: buildMainActivityContent(composePreviewSpec)
+    content: buildMainActivityContent()
   },
   coreUiBuildGradle: {
     tab: 'build.gradle.kts',
@@ -343,14 +360,19 @@ class ProjectsViewModel(
     content: `package tech.alicankorkmaz.portfolio.feature.projects.presentation
 
 @Composable
-<span class="keyword">fun</span> ProjectsRoute(title: String, subtitle: String, ctaLabel: String) {
+<span class="keyword">fun</span> ProjectsRoute(
+  title: String,
+  subtitle: String,
+  ctaLabel: String,
+  onOpenProfile: () -> Unit,
+) {
   Column(
     verticalArrangement = Arrangement.Center,
     horizontalAlignment = Alignment.CenterHorizontally,
   ) {
     Text(title)
     Text(subtitle)
-    Button(onClick = { }) { Text(ctaLabel) }
+    Button(onClick = onOpenProfile) { Text(ctaLabel) }
   }
 }
 
@@ -377,9 +399,12 @@ dependencies {
     content: `package tech.alicankorkmaz.portfolio.feature.profile.presentation
 
 @Composable
-<span class="keyword">fun</span> ProfileScreen() {
+<span class="keyword">fun</span> ProfileScreen(onOpenContact: () -> Unit) {
   Text(<span class="value">"Alican Korkmaz"</span>)
   Text(<span class="value">"Android Developer"</span>)
+  Button(onClick = onOpenContact) {
+    Text(<span class="value">"Contact"</span>)
+  }
 }
 
 <span class="comment">// Separate feature module keeps ownership clear.</span>`
@@ -404,9 +429,12 @@ dependencies {
     content: `package tech.alicankorkmaz.portfolio.feature.contact.presentation
 
 @Composable
-<span class="keyword">fun</span> ContactScreen() {
+<span class="keyword">fun</span> ContactScreen(onBackToProjects: () -> Unit) {
   Text(<span class="value">"linkedin.com/in/alicankorkmaz"</span>)
   Text(<span class="value">"github.com/alicankorkmaz"</span>)
+  Button(onClick = onBackToProjects) {
+    Text(<span class="value">"Back to Projects"</span>)
+  }
 }
 
 <span class="comment">// Contact flow ships independently from other feature slices.</span>`
@@ -462,6 +490,18 @@ const openAliases = {
   benchmark: 'macrobenchmark'
 };
 
+const featureMeta = {
+  projects: { label: 'Projects' },
+  profile: { label: 'Profile' },
+  contact: { label: 'Contact' }
+};
+
+const fileToFeatureMap = {
+  projectsScreen: 'projects',
+  profileScreen: 'profile',
+  contactScreen: 'contact'
+};
+
 const fileKeyIndex = Object.keys(files).reduce((acc, key) => {
   acc[key.toLowerCase()] = key;
   return acc;
@@ -484,14 +524,16 @@ const emulatorState = document.getElementById('emulatorState');
 const bootLayer = document.getElementById('bootLayer');
 const bootText = document.getElementById('bootText');
 const appLayer = document.getElementById('appLayer');
-const composeOutputTitle = document.getElementById('composeOutputTitle');
-const composeOutputMeta = document.getElementById('composeOutputMeta');
-const composeOutputCta = document.getElementById('composeOutputCta');
+const composeFeatureTag = document.getElementById('composeFeatureTag');
 const composeModeBadge = document.getElementById('composeModeBadge');
+const composeScreens = Array.from(document.querySelectorAll('[data-feature-screen]'));
+const composeNavButtons = Array.from(document.querySelectorAll('[data-feature-nav]'));
+const composeActionButtons = Array.from(document.querySelectorAll('[data-feature-action]'));
 
 let emulatorTimerA;
 let emulatorTimerB;
 let isDebugSession = false;
+let activeFeature = 'projects';
 
 function clearEmulatorTimers() {
   clearTimeout(emulatorTimerA);
@@ -506,10 +548,31 @@ function setDebugUI(active) {
   if (composeModeBadge) composeModeBadge.textContent = active ? 'DEBUG' : 'RUN';
 }
 
+function setActiveFeature(featureKey, options = {}) {
+  const { announce = false } = options;
+  if (!featureMeta[featureKey]) return;
+
+  activeFeature = featureKey;
+  if (composeFeatureTag) composeFeatureTag.textContent = featureMeta[featureKey].label;
+
+  composeScreens.forEach((screen) => {
+    screen.classList.toggle('is-active', screen.dataset.featureScreen === featureKey);
+  });
+
+  composeNavButtons.forEach((button) => {
+    button.classList.toggle('is-active', button.dataset.featureNav === featureKey);
+  });
+
+  if (announce && document.body.classList.contains('run-mode')) {
+    appendOutput(`Switched emulator screen to ${featureMeta[featureKey].label}.`);
+  }
+}
+
 function startEmulator(options = {}) {
   const { debug = false } = options;
   clearEmulatorTimers();
   setDebugUI(debug);
+  setActiveFeature(activeFeature);
   document.body.classList.add('run-mode');
   runButton.classList.add('is-running');
   if (runButtonLabel) runButtonLabel.textContent = 'Stop';
@@ -517,9 +580,6 @@ function startEmulator(options = {}) {
   bootText.textContent = debug ? 'Attaching debugger...' : 'Launching virtual device...';
   bootLayer.classList.remove('done');
   appLayer.classList.remove('ready');
-  composeOutputTitle.textContent = composePreviewSpec.title;
-  composeOutputMeta.textContent = composePreviewSpec.subtitle;
-  if (composeOutputCta) composeOutputCta.textContent = composePreviewSpec.cta;
   appendOutput('Running app on Pixel 8 Pro API 35...');
 
   emulatorTimerA = setTimeout(() => {
@@ -591,6 +651,11 @@ function renderFile(key) {
   if (selected) {
     expandParents(selected);
     selected.scrollIntoView({ block: 'nearest' });
+  }
+
+  const featureKey = fileToFeatureMap[key];
+  if (featureKey) {
+    setActiveFeature(featureKey, { announce: true });
   }
 }
 
@@ -685,6 +750,18 @@ if (debugButton) {
   });
 }
 
+composeNavButtons.forEach((button) => {
+  button.addEventListener('click', () => {
+    setActiveFeature(button.dataset.featureNav, { announce: true });
+  });
+});
+
+composeActionButtons.forEach((button) => {
+  button.addEventListener('click', () => {
+    setActiveFeature(button.dataset.featureAction, { announce: true });
+  });
+});
+
 if (collapseAllBtn) {
   collapseAllBtn.addEventListener('click', () => {
     setProjectTreeState(false);
@@ -708,4 +785,5 @@ function updateClock() {
 updateClock();
 setInterval(updateClock, 1000);
 
+setActiveFeature(activeFeature);
 renderFile('mainActivity');
