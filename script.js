@@ -1,0 +1,711 @@
+const composePreviewSpec = {
+  title: 'Hello from Compose',
+  subtitle: 'Feature modules render through a shared app shell',
+  cta: 'Open Projects'
+};
+
+function buildMainActivityContent(spec) {
+  return `package tech.alicankorkmaz.portfolio
+
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import tech.alicankorkmaz.portfolio.feature.projects.presentation.ProjectsRoute
+
+class MainActivity : ComponentActivity() {
+  override <span class="keyword">fun</span> onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    setContent {
+      PortfolioApp()
+    }
+  }
+}
+
+@Composable
+<span class="keyword">fun</span> PortfolioApp() {
+  ProjectsRoute(
+    title = <span class="value">"${spec.title}"</span>,
+    subtitle = <span class="value">"${spec.subtitle}"</span>,
+    ctaLabel = <span class="value">"${spec.cta}"</span>,
+  )
+}
+
+<span class="comment">// :app orchestrates feature modules; it should not own feature business logic.</span>`;
+}
+
+const files = {
+  settingsGradle: {
+    tab: 'settings.gradle.kts',
+    status: 'settings.gradle.kts',
+    content: `pluginManagement {
+  repositories {
+    google()
+    mavenCentral()
+    gradlePluginPortal()
+  }
+}
+
+dependencyResolutionManagement {
+  repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+  repositories {
+    google()
+    mavenCentral()
+  }
+}
+
+rootProject.name = <span class="value">"alican-android-portfolio"</span>
+
+include(
+  <span class="value">":app"</span>,
+  <span class="value">":core:ui"</span>,
+  <span class="value">":core:domain"</span>,
+  <span class="value">":core:network"</span>,
+  <span class="value">":core:testing"</span>,
+  <span class="value">":feature:projects"</span>,
+  <span class="value">":feature:profile"</span>,
+  <span class="value">":feature:contact"</span>,
+  <span class="value">":benchmark"</span>,
+)
+
+<span class="comment">// Multi-module topology is explicit at the entry point.</span>`
+  },
+  rootBuildGradle: {
+    tab: 'build.gradle.kts',
+    status: 'build.gradle.kts (root)',
+    content: `plugins {
+  alias(libs.plugins.android.application) apply false
+  alias(libs.plugins.android.library) apply false
+  alias(libs.plugins.jetbrains.kotlin.android) apply false
+  alias(libs.plugins.kotlin.serialization) apply false
+}
+
+subprojects {
+  tasks.withType<Test>().configureEach {
+    useJUnitPlatform()
+  }
+}
+
+<span class="comment">// Build logic is centralized; modules stay lean and focused.</span>`
+  },
+  versionsToml: {
+    tab: 'libs.versions.toml',
+    status: 'gradle/libs.versions.toml',
+    content: `[versions]
+androidGradlePlugin = <span class="value">"8.8.0"</span>
+kotlin = <span class="value">"2.1.10"</span>
+composeBom = <span class="value">"2025.02.00"</span>
+coroutines = <span class="value">"1.10.1"</span>
+
+[libraries]
+androidx-compose-bom = { module = <span class="value">"androidx.compose:compose-bom"</span>, version.ref = <span class="value">"composeBom"</span> }
+kotlinx-coroutines-core = { module = <span class="value">"org.jetbrains.kotlinx:kotlinx-coroutines-core"</span>, version.ref = <span class="value">"coroutines"</span> }
+
+<span class="comment"># Version catalog keeps dependency governance in one place.</span>`
+  },
+  appBuildGradle: {
+    tab: 'build.gradle.kts',
+    status: ':app/build.gradle.kts',
+    content: `plugins {
+  alias(libs.plugins.android.application)
+  alias(libs.plugins.jetbrains.kotlin.android)
+}
+
+android {
+  namespace = <span class="value">"tech.alicankorkmaz.portfolio"</span>
+}
+
+dependencies {
+  implementation(project(<span class="value">":core:ui"</span>))
+  implementation(project(<span class="value">":feature:projects"</span>))
+  implementation(project(<span class="value">":feature:profile"</span>))
+  implementation(project(<span class="value">":feature:contact"</span>))
+}
+
+<span class="comment">// App module composes features; feature internals stay isolated.</span>`
+  },
+  androidManifest: {
+    tab: 'AndroidManifest.xml',
+    status: ':app/src/main/AndroidManifest.xml',
+    content: `<span class="comment">&lt;manifest package="tech.alicankorkmaz.portfolio"&gt;</span>
+  &lt;application
+    android:name=<span class="value">".PortfolioApplication"</span>
+    android:label=<span class="value">"Alican Korkmaz Portfolio"</span>&gt;
+
+    &lt;activity android:name=<span class="value">".MainActivity"</span> android:exported=<span class="value">"true"</span>&gt;
+      &lt;intent-filter&gt;
+        &lt;action android:name=<span class="value">"android.intent.action.MAIN"</span> /&gt;
+        &lt;category android:name=<span class="value">"android.intent.category.LAUNCHER"</span> /&gt;
+      &lt;/intent-filter&gt;
+    &lt;/activity&gt;
+  &lt;/application&gt;
+<span class="comment">&lt;/manifest&gt;</span>`
+  },
+  applicationClass: {
+    tab: 'PortfolioApplication.kt',
+    status: ':app/src/main/java/tech/alicankorkmaz/portfolio/PortfolioApplication.kt',
+    content: `package tech.alicankorkmaz.portfolio
+
+import android.app.Application
+import tech.alicankorkmaz.portfolio.core.network.NetworkModule
+
+class PortfolioApplication : Application() {
+  override <span class="keyword">fun</span> onCreate() {
+    super.onCreate()
+    NetworkModule.init(
+      baseUrl = <span class="value">"https://api.alicankorkmaz.dev"</span>,
+    )
+  }
+}
+
+<span class="comment">// Application bootstraps shared infra modules exactly once.</span>`
+  },
+  mainActivity: {
+    tab: 'MainActivity.kt',
+    status: ':app/src/main/java/tech/alicankorkmaz/portfolio/MainActivity.kt',
+    content: buildMainActivityContent(composePreviewSpec)
+  },
+  coreUiBuildGradle: {
+    tab: 'build.gradle.kts',
+    status: ':core:ui/build.gradle.kts',
+    content: `plugins {
+  alias(libs.plugins.android.library)
+  alias(libs.plugins.jetbrains.kotlin.android)
+}
+
+dependencies {
+  api(platform(libs.androidx.compose.bom))
+  api(libs.androidx.compose.ui)
+  api(libs.androidx.compose.material3)
+}
+
+<span class="comment">// Shared UI primitives avoid copy-paste across features.</span>`
+  },
+  designSystemTokens: {
+    tab: 'DesignSystemTokens.kt',
+    status: ':core:ui/src/main/java/tech/alicankorkmaz/portfolio/core/ui/DesignSystemTokens.kt',
+    content: `package tech.alicankorkmaz.portfolio.core.ui
+
+object DesignSystemTokens {
+  <span class="keyword">val</span> spacing = object {
+    <span class="keyword">const val</span> xs = 4
+    <span class="keyword">const val</span> sm = 8
+    <span class="keyword">const val</span> md = 16
+  }
+
+  <span class="keyword">val</span> radius = object {
+    <span class="keyword">const val</span> card = 14
+  }
+}
+
+<span class="comment">// Core UI is consumed by all feature modules.</span>`
+  },
+  coreDomainBuildGradle: {
+    tab: 'build.gradle.kts',
+    status: ':core:domain/build.gradle.kts',
+    content: `plugins {
+  alias(libs.plugins.android.library)
+  alias(libs.plugins.jetbrains.kotlin.android)
+}
+
+dependencies {
+  implementation(libs.kotlinx.coroutines.core)
+}
+
+<span class="comment">// Pure contracts + use-case interfaces used across features.</span>`
+  },
+  dispatcherProvider: {
+    tab: 'DispatcherProvider.kt',
+    status: ':core:domain/src/main/java/tech/alicankorkmaz/portfolio/core/domain/DispatcherProvider.kt',
+    content: `package tech.alicankorkmaz.portfolio.core.domain
+
+import kotlin.coroutines.CoroutineContext
+
+interface DispatcherProvider {
+  <span class="keyword">val</span> io: CoroutineContext
+  <span class="keyword">val</span> main: CoroutineContext
+  <span class="keyword">val</span> default: CoroutineContext
+}
+
+<span class="comment">// Abstraction keeps use-cases testable and framework-agnostic.</span>`
+  },
+  coreNetworkBuildGradle: {
+    tab: 'build.gradle.kts',
+    status: ':core:network/build.gradle.kts',
+    content: `plugins {
+  alias(libs.plugins.android.library)
+  alias(libs.plugins.jetbrains.kotlin.android)
+  alias(libs.plugins.kotlin.serialization)
+}
+
+dependencies {
+  implementation(libs.ktor.client.core)
+  implementation(libs.ktor.client.okhttp)
+}
+
+<span class="comment">// Transport concerns stay in :core:network, not in features.</span>`
+  },
+  apiClient: {
+    tab: 'ApiClient.kt',
+    status: ':core:network/src/main/java/tech/alicankorkmaz/portfolio/core/network/ApiClient.kt',
+    content: `package tech.alicankorkmaz.portfolio.core.network
+
+class ApiClient(private <span class="keyword">val</span> baseUrl: String) {
+  suspend <span class="keyword">fun</span> get(path: String): String {
+    <span class="keyword">return</span> <span class="value">"GET $baseUrl/$path"</span>
+  }
+}
+
+<span class="comment">// Shared HTTP client used by data sources in feature modules.</span>`
+  },
+  coreTestingBuildGradle: {
+    tab: 'build.gradle.kts',
+    status: ':core:testing/build.gradle.kts',
+    content: `plugins {
+  alias(libs.plugins.android.library)
+  alias(libs.plugins.jetbrains.kotlin.android)
+}
+
+dependencies {
+  api(libs.junit)
+  api(libs.kotlinx.coroutines.test)
+}
+
+<span class="comment">// Reusable fakes and test utilities for module-level tests.</span>`
+  },
+  testDispatchers: {
+    tab: 'TestDispatchers.kt',
+    status: ':core:testing/src/main/java/tech/alicankorkmaz/portfolio/core/testing/TestDispatchers.kt',
+    content: `package tech.alicankorkmaz.portfolio.core.testing
+
+object TestDispatchers {
+  <span class="keyword">fun</span> immediate() = StandardTestDispatcher()
+}
+
+<span class="comment">// Shared testing helper imported by all feature test suites.</span>`
+  },
+  featureProjectsBuildGradle: {
+    tab: 'build.gradle.kts',
+    status: ':feature:projects/build.gradle.kts',
+    content: `plugins {
+  alias(libs.plugins.android.library)
+  alias(libs.plugins.jetbrains.kotlin.android)
+}
+
+dependencies {
+  implementation(project(<span class="value">":core:ui"</span>))
+  implementation(project(<span class="value">":core:domain"</span>))
+  implementation(project(<span class="value">":core:network"</span>))
+}
+
+<span class="comment">// Feature owns its vertical slice: presentation + domain + data adapters.</span>`
+  },
+  projectsContract: {
+    tab: 'ProjectsContract.kt',
+    status: ':feature:projects/src/main/java/tech/alicankorkmaz/portfolio/feature/projects/presentation/ProjectsContract.kt',
+    content: `package tech.alicankorkmaz.portfolio.feature.projects.presentation
+
+sealed interface ProjectsIntent {
+  data object Refresh : ProjectsIntent
+}
+
+data class ProjectsUiState(
+  <span class="keyword">val</span> isLoading: Boolean = false,
+  <span class="keyword">val</span> items: List<ProjectUiModel> = emptyList(),
+  <span class="keyword">val</span> error: String? = null,
+)
+
+<span class="comment">// MVVM contract lives inside feature boundary.</span>`
+  },
+  projectsViewModel: {
+    tab: 'ProjectsViewModel.kt',
+    status: ':feature:projects/src/main/java/tech/alicankorkmaz/portfolio/feature/projects/presentation/ProjectsViewModel.kt',
+    content: `package tech.alicankorkmaz.portfolio.feature.projects.presentation
+
+class ProjectsViewModel(
+  private <span class="keyword">val</span> repository: ProjectsRepository,
+) : ViewModel() {
+
+  private <span class="keyword">val</span> _state = MutableStateFlow(ProjectsUiState(isLoading = true))
+  <span class="keyword">val</span> state = _state.asStateFlow()
+
+  init {
+    repository.observeFeatured()
+      .onEach { _state.value = ProjectsUiState(items = it.map(::toUiModel)) }
+      .launchIn(viewModelScope)
+  }
+}
+
+<span class="comment">// Feature-level ViewModel; no dependency on other feature modules.</span>`
+  },
+  projectsScreen: {
+    tab: 'ProjectsScreen.kt',
+    status: ':feature:projects/src/main/java/tech/alicankorkmaz/portfolio/feature/projects/presentation/ProjectsScreen.kt',
+    content: `package tech.alicankorkmaz.portfolio.feature.projects.presentation
+
+@Composable
+<span class="keyword">fun</span> ProjectsRoute(title: String, subtitle: String, ctaLabel: String) {
+  Column(
+    verticalArrangement = Arrangement.Center,
+    horizontalAlignment = Alignment.CenterHorizontally,
+  ) {
+    Text(title)
+    Text(subtitle)
+    Button(onClick = { }) { Text(ctaLabel) }
+  }
+}
+
+<span class="comment">// Public route exported to :app; internals remain private to feature.</span>`
+  },
+  featureProfileBuildGradle: {
+    tab: 'build.gradle.kts',
+    status: ':feature:profile/build.gradle.kts',
+    content: `plugins {
+  alias(libs.plugins.android.library)
+  alias(libs.plugins.jetbrains.kotlin.android)
+}
+
+dependencies {
+  implementation(project(<span class="value">":core:ui"</span>))
+  implementation(project(<span class="value">":core:domain"</span>))
+}
+
+<span class="comment">// Profile feature can evolve independently of Projects feature.</span>`
+  },
+  profileScreen: {
+    tab: 'ProfileScreen.kt',
+    status: ':feature:profile/src/main/java/tech/alicankorkmaz/portfolio/feature/profile/presentation/ProfileScreen.kt',
+    content: `package tech.alicankorkmaz.portfolio.feature.profile.presentation
+
+@Composable
+<span class="keyword">fun</span> ProfileScreen() {
+  Text(<span class="value">"Alican Korkmaz"</span>)
+  Text(<span class="value">"Android Developer"</span>)
+}
+
+<span class="comment">// Separate feature module keeps ownership clear.</span>`
+  },
+  featureContactBuildGradle: {
+    tab: 'build.gradle.kts',
+    status: ':feature:contact/build.gradle.kts',
+    content: `plugins {
+  alias(libs.plugins.android.library)
+  alias(libs.plugins.jetbrains.kotlin.android)
+}
+
+dependencies {
+  implementation(project(<span class="value">":core:ui"</span>))
+}
+
+<span class="comment">// Lightweight feature module for contact entry points.</span>`
+  },
+  contactScreen: {
+    tab: 'ContactScreen.kt',
+    status: ':feature:contact/src/main/java/tech/alicankorkmaz/portfolio/feature/contact/presentation/ContactScreen.kt',
+    content: `package tech.alicankorkmaz.portfolio.feature.contact.presentation
+
+@Composable
+<span class="keyword">fun</span> ContactScreen() {
+  Text(<span class="value">"linkedin.com/in/alicankorkmaz"</span>)
+  Text(<span class="value">"github.com/alicankorkmaz"</span>)
+}
+
+<span class="comment">// Contact flow ships independently from other feature slices.</span>`
+  },
+  benchmarkBuildGradle: {
+    tab: 'build.gradle.kts',
+    status: ':benchmark/build.gradle.kts',
+    content: `plugins {
+  alias(libs.plugins.android.test)
+  alias(libs.plugins.jetbrains.kotlin.android)
+}
+
+dependencies {
+  implementation(project(<span class="value">":app"</span>))
+  implementation(libs.androidx.benchmark.macro)
+}
+
+<span class="comment">// Performance budget is tracked via dedicated benchmark module.</span>`
+  },
+  macrobenchmark: {
+    tab: 'StartupBenchmark.kt',
+    status: ':benchmark/src/main/java/tech/alicankorkmaz/portfolio/benchmark/StartupBenchmark.kt',
+    content: `package tech.alicankorkmaz.portfolio.benchmark
+
+@RunWith(AndroidJUnit4::class)
+class StartupBenchmark {
+  @Test
+  <span class="keyword">fun</span> startup() = benchmarkRule.measureRepeated {
+    startActivityAndWait()
+  }
+}
+
+<span class="comment">// Macrobenchmark validates startup time regressions in CI.</span>`
+  }
+};
+
+const openAliases = {
+  main: 'mainActivity',
+  application: 'applicationClass',
+  app: 'appBuildGradle',
+  manifest: 'androidManifest',
+  settings: 'settingsGradle',
+  rootbuild: 'rootBuildGradle',
+  versions: 'versionsToml',
+  coreui: 'designSystemTokens',
+  coredomain: 'dispatcherProvider',
+  corenetwork: 'apiClient',
+  coretesting: 'testDispatchers',
+  projects: 'projectsScreen',
+  projectsvm: 'projectsViewModel',
+  profile: 'profileScreen',
+  contact: 'contactScreen',
+  benchmark: 'macrobenchmark'
+};
+
+const fileKeyIndex = Object.keys(files).reduce((acc, key) => {
+  acc[key.toLowerCase()] = key;
+  return acc;
+}, {});
+
+const fileTree = document.getElementById('fileTree');
+const collapseAllBtn = document.getElementById('collapseAllBtn');
+const expandAllBtn = document.getElementById('expandAllBtn');
+const codeBlock = document.getElementById('codeBlock');
+const activeTab = document.getElementById('activeTab');
+const statusFile = document.getElementById('statusFile');
+const terminalInput = document.getElementById('terminalInput');
+const terminalOutput = document.getElementById('terminalOutput');
+const clock = document.getElementById('clock');
+const runButton = document.getElementById('runButton');
+const runButtonLabel = document.getElementById('runButtonLabel');
+const debugButton = document.getElementById('debugButton');
+const debugButtonLabel = document.getElementById('debugButtonLabel');
+const emulatorState = document.getElementById('emulatorState');
+const bootLayer = document.getElementById('bootLayer');
+const bootText = document.getElementById('bootText');
+const appLayer = document.getElementById('appLayer');
+const composeOutputTitle = document.getElementById('composeOutputTitle');
+const composeOutputMeta = document.getElementById('composeOutputMeta');
+const composeOutputCta = document.getElementById('composeOutputCta');
+const composeModeBadge = document.getElementById('composeModeBadge');
+
+let emulatorTimerA;
+let emulatorTimerB;
+let isDebugSession = false;
+
+function clearEmulatorTimers() {
+  clearTimeout(emulatorTimerA);
+  clearTimeout(emulatorTimerB);
+}
+
+function setDebugUI(active) {
+  isDebugSession = active;
+  document.body.classList.toggle('debug-mode', active);
+  if (debugButton) debugButton.classList.toggle('is-active', active);
+  if (debugButtonLabel) debugButtonLabel.textContent = active ? 'Stop Debug' : 'Debug';
+  if (composeModeBadge) composeModeBadge.textContent = active ? 'DEBUG' : 'RUN';
+}
+
+function startEmulator(options = {}) {
+  const { debug = false } = options;
+  clearEmulatorTimers();
+  setDebugUI(debug);
+  document.body.classList.add('run-mode');
+  runButton.classList.add('is-running');
+  if (runButtonLabel) runButtonLabel.textContent = 'Stop';
+  emulatorState.textContent = 'Booting';
+  bootText.textContent = debug ? 'Attaching debugger...' : 'Launching virtual device...';
+  bootLayer.classList.remove('done');
+  appLayer.classList.remove('ready');
+  composeOutputTitle.textContent = composePreviewSpec.title;
+  composeOutputMeta.textContent = composePreviewSpec.subtitle;
+  if (composeOutputCta) composeOutputCta.textContent = composePreviewSpec.cta;
+  appendOutput('Running app on Pixel 8 Pro API 35...');
+
+  emulatorTimerA = setTimeout(() => {
+    bootText.textContent = debug ? 'Resolving breakpoints...' : 'Installing app bundle...';
+  }, 620);
+
+  emulatorTimerB = setTimeout(() => {
+    bootLayer.classList.add('done');
+    appLayer.classList.add('ready');
+    emulatorState.textContent = debug ? 'Debugging' : 'Running';
+    appendOutput(debug ? 'Debugger attached. Breakpoints are active.' : 'App launched successfully.');
+  }, 1450);
+}
+
+function attachDebugger() {
+  if (!document.body.classList.contains('run-mode')) {
+    startEmulator({ debug: true });
+    return;
+  }
+  if (isDebugSession) return;
+  setDebugUI(true);
+  emulatorState.textContent = 'Debugging';
+  appendOutput('Debugger attached to running session.');
+}
+
+function stopEmulator() {
+  clearEmulatorTimers();
+  setDebugUI(false);
+  document.body.classList.remove('run-mode');
+  runButton.classList.remove('is-running');
+  if (runButtonLabel) runButtonLabel.textContent = 'Run';
+  emulatorState.textContent = 'Idle';
+  bootText.textContent = 'Launching emulator...';
+  bootLayer.classList.remove('done');
+  appLayer.classList.remove('ready');
+  appendOutput('Emulator stopped.');
+}
+
+function expandParents(node) {
+  let current = node.parentElement;
+  while (current && current !== fileTree) {
+    if (current.tagName === 'DETAILS') {
+      current.open = true;
+    }
+    current = current.parentElement;
+  }
+}
+
+function setProjectTreeState(expanded) {
+  const packages = fileTree.querySelectorAll('details.tree-package');
+  packages.forEach((pkg, index) => {
+    pkg.open = expanded || index === 0;
+  });
+}
+
+function renderFile(key) {
+  const file = files[key];
+  if (!file) return;
+
+  codeBlock.innerHTML = file.content;
+  activeTab.textContent = file.tab;
+  statusFile.textContent = file.status;
+
+  fileTree.querySelectorAll('.tree-item').forEach((item) => {
+    item.classList.toggle('active', item.dataset.file === key);
+  });
+
+  const selected = fileTree.querySelector(`.tree-item[data-file="${key}"]`);
+  if (selected) {
+    expandParents(selected);
+    selected.scrollIntoView({ block: 'nearest' });
+  }
+}
+
+function appendOutput(text) {
+  const line = document.createElement('div');
+  line.textContent = text;
+  terminalOutput.appendChild(line);
+  terminalOutput.scrollTop = terminalOutput.scrollHeight;
+}
+
+function handleCommand(rawInput) {
+  const input = rawInput.trim();
+  if (!input) return;
+
+  appendOutput(`$ ${input}`);
+
+  const [cmd, ...args] = input.split(/\s+/);
+  const arg = args.join(' ').toLowerCase();
+
+  switch (cmd.toLowerCase()) {
+    case 'help':
+      appendOutput('Commands: help, ls, open <alias>, run, debug, stop, clear, whoami');
+      appendOutput('Aliases: main, application, app, settings, coreui, projects, profile, contact, benchmark');
+      break;
+    case 'ls':
+      appendOutput(':app, :core:ui, :core:domain, :core:network, :core:testing');
+      appendOutput(':feature:projects, :feature:profile, :feature:contact, :benchmark');
+      appendOutput('Gradle Scripts: settings.gradle.kts, build.gradle.kts, libs.versions.toml');
+      break;
+    case 'open': {
+      const target = openAliases[arg] || fileKeyIndex[arg];
+      if (!files[target]) {
+        appendOutput('Unknown target. Try: open projects');
+        break;
+      }
+      renderFile(target);
+      appendOutput(`Opened ${files[target].status}`);
+      break;
+    }
+    case 'whoami':
+      appendOutput('Android developer focused on multi-module, feature-based architecture and clean boundaries.');
+      break;
+    case 'run':
+      startEmulator({ debug: false });
+      break;
+    case 'debug':
+      attachDebugger();
+      break;
+    case 'stop':
+      stopEmulator();
+      break;
+    case 'clear':
+      terminalOutput.innerHTML = '';
+      break;
+    default:
+      appendOutput(`Unknown command: ${cmd}`);
+      break;
+  }
+}
+
+fileTree.addEventListener('click', (event) => {
+  const target = event.target;
+  if (!(target instanceof HTMLElement)) return;
+  const button = target.closest('.tree-item');
+  if (!button) return;
+  renderFile(button.dataset.file);
+});
+
+terminalInput.addEventListener('keydown', (event) => {
+  if (event.key !== 'Enter') return;
+  handleCommand(terminalInput.value);
+  terminalInput.value = '';
+});
+
+if (runButton) {
+  runButton.addEventListener('click', () => {
+    if (document.body.classList.contains('run-mode')) {
+      stopEmulator();
+      return;
+    }
+    startEmulator({ debug: false });
+  });
+}
+
+if (debugButton) {
+  debugButton.addEventListener('click', () => {
+    if (isDebugSession) {
+      stopEmulator();
+      return;
+    }
+    attachDebugger();
+  });
+}
+
+if (collapseAllBtn) {
+  collapseAllBtn.addEventListener('click', () => {
+    setProjectTreeState(false);
+  });
+}
+
+if (expandAllBtn) {
+  expandAllBtn.addEventListener('click', () => {
+    setProjectTreeState(true);
+  });
+}
+
+function updateClock() {
+  const now = new Date();
+  clock.textContent = now.toLocaleTimeString('tr-TR', {
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+}
+
+updateClock();
+setInterval(updateClock, 1000);
+
+renderFile('mainActivity');

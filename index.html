@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Alican Korkmaz | Android Developer</title>
+    <meta
+      name="description"
+      content="Android geliştirici Alican Korkmaz için kişisel portfolio sitesi."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="experience-stage" id="experienceStage">
+      <div class="ide-shell" role="application" aria-label="Android developer portfolio IDE experience">
+        <header class="topbar">
+          <div class="window-controls" aria-hidden="true">
+            <span class="control close"></span>
+            <span class="control minimize"></span>
+            <span class="control maximize"></span>
+          </div>
+          <div class="product-title">Alican Korkmaz Portfolio</div>
+          <div class="actions">
+            <button class="action action-run" id="runButton">
+              <svg class="action-icon" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+                <path d="M3 2L10 6L3 10V2Z" fill="currentColor" />
+              </svg>
+              <span class="action-label" id="runButtonLabel">Run</span>
+            </button>
+            <button class="action action-debug" id="debugButton">
+              <svg class="action-icon" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+                <path d="M6 1.5A2.5 2.5 0 0 1 8.5 4H10V5H8.5V6.5H10V7.5H8.5V8A2.5 2.5 0 0 1 6 10.5A2.5 2.5 0 0 1 3.5 8V7.5H2V6.5H3.5V5H2V4H3.5A2.5 2.5 0 0 1 6 1.5ZM5 4.8V7.2H7V4.8H5Z" fill="currentColor" />
+              </svg>
+              <span class="action-label" id="debugButtonLabel">Debug</span>
+            </button>
+          </div>
+        </header>
+
+        <nav class="menu-bar" aria-label="Main menu">
+          <span>File</span>
+          <span>Edit</span>
+          <span>View</span>
+          <span>Navigate</span>
+          <span>Code</span>
+          <span>Refactor</span>
+          <span>Help</span>
+        </nav>
+
+        <main class="workspace">
+          <aside class="project-panel" aria-label="Project explorer">
+            <div class="panel-head">
+              <span class="panel-head-title">Project</span>
+              <div class="panel-head-actions">
+                <button type="button" class="panel-head-action" id="collapseAllBtn">Collapse All</button>
+                <button type="button" class="panel-head-action" id="expandAllBtn">Expand All</button>
+              </div>
+            </div>
+            <div class="file-tree" id="fileTree">
+              <details class="tree-package" open>
+                <summary class="tree-entry">
+                  <span class="node-icon folder"></span>
+                  <span class="node-label">alican-android-portfolio</span>
+                </summary>
+                <div class="tree-children">
+                  <details class="tree-package" open>
+                    <summary class="tree-entry">
+                      <span class="node-icon folder"></span>
+                      <span class="node-label">:app</span>
+                    </summary>
+                    <div class="tree-children">
+                      <details class="tree-package" open>
+                        <summary class="tree-entry">
+                          <span class="node-icon folder"></span>
+                          <span class="node-label">src/main/java/tech.alicankorkmaz.portfolio</span>
+                        </summary>
+                        <div class="tree-children">
+                          <button type="button" class="tree-entry tree-item" data-file="applicationClass">
+                            <span class="node-icon file"></span>
+                            <span class="node-label">PortfolioApplication.kt</span>
+                          </button>
+                          <button type="button" class="tree-entry tree-item active" data-file="mainActivity">
+                            <span class="node-icon file"></span>
+                            <span class="node-label">MainActivity.kt</span>
+                          </button>
+                        </div>
+                      </details>
+
+                      <details class="tree-package">
+                        <summary class="tree-entry">
+                          <span class="node-icon folder"></span>
+                          <span class="node-label">gradle</span>
+                        </summary>
+                        <div class="tree-children">
+                          <button type="button" class="tree-entry tree-item" data-file="appBuildGradle">
+                            <span class="node-icon file"></span>
+                            <span class="node-label">build.gradle.kts</span>
+                          </button>
+                          <button type="button" class="tree-entry tree-item" data-file="androidManifest">
+                            <span class="node-icon file"></span>
+                            <span class="node-label">AndroidManifest.xml</span>
+                          </button>
+                        </div>
+                      </details>
+                    </div>
+                  </details>
+
+                  <details class="tree-package">
+                    <summary class="tree-entry">
+                      <span class="node-icon folder"></span>
+                      <span class="node-label">:core</span>
+                    </summary>
+                    <div class="tree-children">
+                      <details class="tree-package">
+                        <summary class="tree-entry">
+                          <span class="node-icon folder"></span>
+                          <span class="node-label">:core:ui</span>
+                        </summary>
+                        <div class="tree-children">
+                          <button type="button" class="tree-entry tree-item" data-file="coreUiBuildGradle">
+                            <span class="node-icon file"></span>
+                            <span class="node-label">build.gradle.kts</span>
+                          </button>
+                          <button type="button" class="tree-entry tree-item" data-file="designSystemTokens">
+                            <span class="node-icon file"></span>
+                            <span class="node-label">DesignSystemTokens.kt</span>
+                          </button>
+                        </div>
+                      </details>
+
+                      <details class="tree-package">
+                        <summary class="tree-entry">
+                          <span class="node-icon folder"></span>
+                          <span class="node-label">:core:domain</span>
+                        </summary>
+                        <div class="tree-children">
+                          <button type="button" class="tree-entry tree-item" data-file="coreDomainBuildGradle">
+                            <span class="node-icon file"></span>
+                            <span class="node-label">build.gradle.kts</span>
+                          </button>
+                          <button type="button" class="tree-entry tree-item" data-file="dispatcherProvider">
+                            <span class="node-icon file"></span>
+                            <span class="node-label">DispatcherProvider.kt</span>
+                          </button>
+                        </div>
+                      </details>
+
+                      <details class="tree-package">
+                        <summary class="tree-entry">
+                          <span class="node-icon folder"></span>
+                          <span class="node-label">:core:network</span>
+                        </summary>
+                        <div class="tree-children">
+                          <button type="button" class="tree-entry tree-item" data-file="coreNetworkBuildGradle">
+                            <span class="node-icon file"></span>
+                            <span class="node-label">build.gradle.kts</span>
+                          </button>
+                          <button type="button" class="tree-entry tree-item" data-file="apiClient">
+                            <span class="node-icon file"></span>
+                            <span class="node-label">ApiClient.kt</span>
+                          </button>
+                        </div>
+                      </details>
+
+                      <details class="tree-package">
+                        <summary class="tree-entry">
+                          <span class="node-icon folder"></span>
+                          <span class="node-label">:core:testing</span>
+                        </summary>
+                        <div class="tree-children">
+                          <button type="button" class="tree-entry tree-item" data-file="coreTestingBuildGradle">
+                            <span class="node-icon file"></span>
+                            <span class="node-label">build.gradle.kts</span>
+                          </button>
+                          <button type="button" class="tree-entry tree-item" data-file="testDispatchers">
+                            <span class="node-icon file"></span>
+                            <span class="node-label">TestDispatchers.kt</span>
+                          </button>
+                        </div>
+                      </details>
+                    </div>
+                  </details>
+
+                  <details class="tree-package">
+                    <summary class="tree-entry">
+                      <span class="node-icon folder"></span>
+                      <span class="node-label">:feature</span>
+                    </summary>
+                    <div class="tree-children">
+                      <details class="tree-package">
+                        <summary class="tree-entry">
+                          <span class="node-icon folder"></span>
+                          <span class="node-label">:feature:projects</span>
+                        </summary>
+                        <div class="tree-children">
+                          <button type="button" class="tree-entry tree-item" data-file="featureProjectsBuildGradle">
+                            <span class="node-icon file"></span>
+                            <span class="node-label">build.gradle.kts</span>
+                          </button>
+                          <button type="button" class="tree-entry tree-item" data-file="projectsContract">
+                            <span class="node-icon file"></span>
+                            <span class="node-label">ProjectsContract.kt</span>
+                          </button>
+                          <button type="button" class="tree-entry tree-item" data-file="projectsViewModel">
+                            <span class="node-icon file"></span>
+                            <span class="node-label">ProjectsViewModel.kt</span>
+                          </button>
+                          <button type="button" class="tree-entry tree-item" data-file="projectsScreen">
+                            <span class="node-icon file"></span>
+                            <span class="node-label">ProjectsScreen.kt</span>
+                          </button>
+                        </div>
+                      </details>
+
+                      <details class="tree-package">
+                        <summary class="tree-entry">
+                          <span class="node-icon folder"></span>
+                          <span class="node-label">:feature:profile</span>
+                        </summary>
+                        <div class="tree-children">
+                          <button type="button" class="tree-entry tree-item" data-file="featureProfileBuildGradle">
+                            <span class="node-icon file"></span>
+                            <span class="node-label">build.gradle.kts</span>
+                          </button>
+                          <button type="button" class="tree-entry tree-item" data-file="profileScreen">
+                            <span class="node-icon file"></span>
+                            <span class="node-label">ProfileScreen.kt</span>
+                          </button>
+                        </div>
+                      </details>
+
+                      <details class="tree-package">
+                        <summary class="tree-entry">
+                          <span class="node-icon folder"></span>
+                          <span class="node-label">:feature:contact</span>
+                        </summary>
+                        <div class="tree-children">
+                          <button type="button" class="tree-entry tree-item" data-file="featureContactBuildGradle">
+                            <span class="node-icon file"></span>
+                            <span class="node-label">build.gradle.kts</span>
+                          </button>
+                          <button type="button" class="tree-entry tree-item" data-file="contactScreen">
+                            <span class="node-icon file"></span>
+                            <span class="node-label">ContactScreen.kt</span>
+                          </button>
+                        </div>
+                      </details>
+                    </div>
+                  </details>
+
+                  <details class="tree-package">
+                    <summary class="tree-entry">
+                      <span class="node-icon folder"></span>
+                      <span class="node-label">:benchmark</span>
+                    </summary>
+                    <div class="tree-children">
+                      <button type="button" class="tree-entry tree-item" data-file="benchmarkBuildGradle">
+                        <span class="node-icon file"></span>
+                        <span class="node-label">build.gradle.kts</span>
+                      </button>
+                      <button type="button" class="tree-entry tree-item" data-file="macrobenchmark">
+                        <span class="node-icon file"></span>
+                        <span class="node-label">StartupBenchmark.kt</span>
+                      </button>
+                    </div>
+                  </details>
+
+                  <details class="tree-package">
+                    <summary class="tree-entry">
+                      <span class="node-icon folder"></span>
+                      <span class="node-label">Gradle Scripts</span>
+                    </summary>
+                    <div class="tree-children">
+                      <button type="button" class="tree-entry tree-item" data-file="settingsGradle">
+                        <span class="node-icon file"></span>
+                        <span class="node-label">settings.gradle.kts</span>
+                      </button>
+                      <button type="button" class="tree-entry tree-item" data-file="rootBuildGradle">
+                        <span class="node-icon file"></span>
+                        <span class="node-label">build.gradle.kts</span>
+                      </button>
+                      <button type="button" class="tree-entry tree-item" data-file="versionsToml">
+                        <span class="node-icon file"></span>
+                        <span class="node-label">libs.versions.toml</span>
+                      </button>
+                    </div>
+                  </details>
+                </div>
+              </details>
+            </div>
+          </aside>
+
+          <section class="editor-space">
+            <div class="tab-bar">
+              <button class="editor-tab active" id="activeTab">MainActivity.kt</button>
+            </div>
+            <article class="editor" aria-live="polite">
+              <pre class="code" id="codeBlock"></pre>
+            </article>
+          </section>
+        </main>
+
+        <section class="terminal-wrap" aria-label="Terminal">
+          <div class="terminal-head">Terminal</div>
+          <div class="terminal-output" id="terminalOutput">
+            <div>> Portfolio shell hazır. Komutlar için <span class="cmd">help</span> yaz.</div>
+          </div>
+          <label class="terminal-input-wrap">
+            <span class="prompt">$</span>
+            <input id="terminalInput" class="terminal-input" type="text" autocomplete="off" placeholder="help" />
+          </label>
+        </section>
+
+        <footer class="status-bar">
+          <span id="statusFile">MainActivity.kt</span>
+          <span>Kotlin</span>
+          <span>Android Developer</span>
+          <span id="clock">--:--</span>
+        </footer>
+      </div>
+
+      <aside class="emulator-panel" id="emulatorPanel" aria-label="Android Emulator">
+        <header class="emulator-header">
+          <span>Pixel 8 Pro API 35</span>
+          <span class="emulator-dot"></span>
+          <span id="emulatorState">Idle</span>
+        </header>
+        <div class="device-shell-wrap">
+          <div class="device-shell">
+            <div class="device-notch"></div>
+            <div class="device-screen">
+              <div class="boot-layer" id="bootLayer">
+                <div class="boot-logo">android</div>
+                <div class="boot-text" id="bootText">Launching emulator...</div>
+                <div class="boot-loader"><span></span></div>
+              </div>
+              <div class="app-layer" id="appLayer">
+                <div class="compose-preview">
+                  <div class="compose-status">
+                    <span>9:41</span>
+                    <span>5G</span>
+                    <span>83%</span>
+                  </div>
+                  <div class="compose-toolbar">
+                    <span>Alican Korkmaz</span>
+                    <span class="compose-mode-badge" id="composeModeBadge">RUN</span>
+                  </div>
+                  <main class="compose-content">
+                    <h3 id="composeOutputTitle">Hello from Compose</h3>
+                    <p id="composeOutputMeta">Rendered from MainActivity.kt</p>
+                    <button class="compose-cta" id="composeOutputCta">Open Projects</button>
+                  </main>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
