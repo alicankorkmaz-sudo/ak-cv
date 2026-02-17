@@ -507,6 +507,83 @@ const fileKeyIndex = Object.keys(files).reduce((acc, key) => {
   return acc;
 }, {});
 
+function getFileIconKind(fileKey) {
+  const file = files[fileKey];
+  if (!file || typeof file.tab !== 'string') return 'icon-default';
+
+  const tab = file.tab.toLowerCase();
+
+  if (tab.endsWith('.kt')) return 'icon-kotlin';
+  if (tab.endsWith('.xml')) return 'icon-xml';
+  if (tab.endsWith('.toml')) return 'icon-toml';
+  if (tab.includes('gradle') || tab.endsWith('.kts')) return 'icon-gradle';
+
+  return 'icon-default';
+}
+
+function getFileIconGlyph(iconKind) {
+  switch (iconKind) {
+    case 'icon-kotlin':
+      return 'code';
+    case 'icon-gradle':
+      return 'build';
+    case 'icon-xml':
+      return 'notes';
+    case 'icon-toml':
+      return 'view_list';
+    default:
+      return 'description';
+  }
+}
+
+function getFolderIconGlyph(iconKind) {
+  switch (iconKind) {
+    case 'icon-module':
+      return 'folder_open';
+    case 'icon-scripts':
+      return 'settings';
+    default:
+      return 'folder';
+  }
+}
+
+function applyProjectTreeIcons() {
+  const fileItems = fileTree.querySelectorAll('.tree-item');
+  fileItems.forEach((item) => {
+    const icon = item.querySelector('.node-icon.file');
+    if (!icon) return;
+
+    const iconKind = getFileIconKind(item.dataset.file);
+    icon.classList.remove('icon-kotlin', 'icon-gradle', 'icon-xml', 'icon-toml', 'icon-default');
+    icon.classList.add(iconKind);
+    icon.textContent = getFileIconGlyph(iconKind);
+    icon.setAttribute('aria-hidden', 'true');
+  });
+
+  const folderSummaries = fileTree.querySelectorAll('details.tree-package > summary.tree-entry');
+  folderSummaries.forEach((summary) => {
+    const icon = summary.querySelector('.node-icon.folder');
+    if (!icon) return;
+
+    const label = summary.querySelector('.node-label')?.textContent?.trim().toLowerCase() ?? '';
+    icon.classList.remove('icon-module', 'icon-scripts', 'icon-folder');
+    let folderIconKind = 'icon-folder';
+
+    if (label === 'gradle scripts') {
+      icon.classList.add('icon-scripts');
+      folderIconKind = 'icon-scripts';
+    } else if (label.startsWith(':')) {
+      icon.classList.add('icon-module');
+      folderIconKind = 'icon-module';
+    } else {
+      icon.classList.add('icon-folder');
+    }
+
+    icon.textContent = getFolderIconGlyph(folderIconKind);
+    icon.setAttribute('aria-hidden', 'true');
+  });
+}
+
 const kotlinTokenRegex =
   /(@[A-Za-z_][A-Za-z0-9_]*)|(\b(?:val|var)\b)(\s+)([a-z][A-Za-z0-9_]*)|(\.)([A-Z][A-Za-z0-9_]*)|\b(package|import|class|object|interface|data|sealed|enum|fun|val|var|private|public|internal|override|suspend|const|return|when|if|else|in|is|null|true|false|init|by)\b|\b([A-Z][A-Za-z0-9_]*)\b(?=,)|\b([A-Z][A-Za-z0-9_]*)\b|\b([a-z][A-Za-z0-9_]*)\b(?=\s*=)|\b([a-z][A-Za-z0-9_]*)\b(?=\s*\()|\b(\d+)\b/g;
 
@@ -872,5 +949,6 @@ function updateClock() {
 updateClock();
 setInterval(updateClock, 1000);
 
+applyProjectTreeIcons();
 setActiveFeature(activeFeature);
 renderFile('mainActivity');
