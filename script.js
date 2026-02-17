@@ -595,6 +595,8 @@ const activeTab = document.getElementById('activeTab');
 const statusFile = document.getElementById('statusFile');
 const terminalInput = document.getElementById('terminalInput');
 const terminalOutput = document.getElementById('terminalOutput');
+const terminalSheetToggle = document.getElementById('terminalSheetToggle');
+const statusTerminalToggle = document.getElementById('statusTerminalToggle');
 const clock = document.getElementById('clock');
 const runButton = document.getElementById('runButton');
 const runButtonLabel = document.getElementById('runButtonLabel');
@@ -609,11 +611,14 @@ const composeModeBadge = document.getElementById('composeModeBadge');
 const composeScreens = Array.from(document.querySelectorAll('[data-feature-screen]'));
 const composeNavButtons = Array.from(document.querySelectorAll('[data-feature-nav]'));
 const composeActionButtons = Array.from(document.querySelectorAll('[data-feature-action]'));
+const mobileEmulatorStop = document.getElementById('mobileEmulatorStop');
+const mobileViewportQuery = window.matchMedia('(max-width: 820px)');
 
 let emulatorTimerA;
 let emulatorTimerB;
 let isDebugSession = false;
 let activeFeature = 'projects';
+let isTerminalOpen = false;
 
 function clearEmulatorTimers() {
   clearTimeout(emulatorTimerA);
@@ -626,6 +631,29 @@ function setDebugUI(active) {
   if (debugButton) debugButton.classList.toggle('is-active', active);
   if (debugButtonLabel) debugButtonLabel.textContent = active ? 'Stop Debug' : 'Debug';
   if (composeModeBadge) composeModeBadge.textContent = active ? 'DEBUG' : 'RUN';
+}
+
+function syncTerminalToggleUI() {
+  if (terminalSheetToggle) {
+    terminalSheetToggle.textContent = isTerminalOpen ? 'Hide' : 'Show';
+    terminalSheetToggle.setAttribute('aria-expanded', String(isTerminalOpen));
+  }
+
+  if (statusTerminalToggle) {
+    statusTerminalToggle.textContent = isTerminalOpen ? 'Hide Terminal' : 'Terminal';
+    statusTerminalToggle.setAttribute('aria-expanded', String(isTerminalOpen));
+  }
+}
+
+function setTerminalOpen(nextOpen) {
+  isTerminalOpen = Boolean(nextOpen);
+  document.body.classList.toggle('terminal-open', isTerminalOpen);
+  syncTerminalToggleUI();
+}
+
+function toggleTerminalOpen() {
+  if (!mobileViewportQuery.matches) return;
+  setTerminalOpen(!isTerminalOpen);
 }
 
 function setActiveFeature(featureKey, options = {}) {
@@ -651,6 +679,7 @@ function setActiveFeature(featureKey, options = {}) {
 function startEmulator(options = {}) {
   const { debug = false } = options;
   clearEmulatorTimers();
+  setTerminalOpen(false);
   setDebugUI(debug);
   setActiveFeature(activeFeature);
   document.body.classList.add('run-mode');
@@ -894,6 +923,26 @@ terminalInput.addEventListener('keydown', (event) => {
   terminalInput.value = '';
 });
 
+if (terminalInput) {
+  terminalInput.addEventListener('focus', () => {
+    if (mobileViewportQuery.matches) {
+      setTerminalOpen(true);
+    }
+  });
+}
+
+if (terminalSheetToggle) {
+  terminalSheetToggle.addEventListener('click', () => {
+    toggleTerminalOpen();
+  });
+}
+
+if (statusTerminalToggle) {
+  statusTerminalToggle.addEventListener('click', () => {
+    toggleTerminalOpen();
+  });
+}
+
 if (runButton) {
   runButton.addEventListener('click', () => {
     if (document.body.classList.contains('run-mode')) {
@@ -911,6 +960,12 @@ if (debugButton) {
       return;
     }
     attachDebugger();
+  });
+}
+
+if (mobileEmulatorStop) {
+  mobileEmulatorStop.addEventListener('click', () => {
+    stopEmulator();
   });
 }
 
@@ -938,6 +993,20 @@ if (expandAllBtn) {
   });
 }
 
+const handleMobileViewportChange = (event) => {
+  if (!event.matches) {
+    setTerminalOpen(false);
+    return;
+  }
+  syncTerminalToggleUI();
+};
+
+if (typeof mobileViewportQuery.addEventListener === 'function') {
+  mobileViewportQuery.addEventListener('change', handleMobileViewportChange);
+} else if (typeof mobileViewportQuery.addListener === 'function') {
+  mobileViewportQuery.addListener(handleMobileViewportChange);
+}
+
 function updateClock() {
   const now = new Date();
   clock.textContent = now.toLocaleTimeString('tr-TR', {
@@ -951,4 +1020,5 @@ setInterval(updateClock, 1000);
 
 applyProjectTreeIcons();
 setActiveFeature(activeFeature);
+syncTerminalToggleUI();
 renderFile('mainActivity');

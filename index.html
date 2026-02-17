@@ -310,7 +310,10 @@
         </main>
 
         <section class="terminal-wrap" aria-label="Terminal">
-          <div class="terminal-head">Terminal</div>
+          <div class="terminal-head">
+            <span>Terminal</span>
+            <button type="button" class="terminal-toggle" id="terminalSheetToggle" aria-expanded="false">Show</button>
+          </div>
           <div class="terminal-output" id="terminalOutput">
             <div>> Portfolio shell hazır. Komutlar için <span class="cmd">help</span> yaz.</div>
           </div>
@@ -324,6 +327,7 @@
           <span id="statusFile">MainActivity.kt</span>
           <span>Kotlin</span>
           <span>Android Developer</span>
+          <button type="button" class="status-terminal-toggle" id="statusTerminalToggle">Terminal</button>
           <span id="clock">--:--</span>
         </footer>
       </div>
@@ -333,6 +337,7 @@
           <span>Pixel 8 Pro API 35</span>
           <span class="emulator-dot"></span>
           <span id="emulatorState">Idle</span>
+          <button type="button" class="mobile-emulator-stop" id="mobileEmulatorStop">Stop</button>
         </header>
         <div class="device-shell-wrap">
           <div class="device-shell">

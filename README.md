@@ -1,33 +1,24 @@
-# Alican Korkmaz Portfolio (MVP)
+# Alican Korkmaz Portfolio
 
-Bu proje, Android IDE deneyimi hissi veren bir portfolio MVP'sidir.
+Android Studio / IntelliJ hissi veren, CV yerine geçen kişisel portfolio sitesi.
 
-## Çalıştırma
+## Canlı Site
+- https://alicankorkmaz-sudo.github.io/ak-cv/
 
-Bu klasörde aşağıdaki komutu çalıştır:
-
+## Lokal Çalıştırma
 ```bash
 python3 -m http.server 4173
 ```
 
-Ardından tarayıcıda aç:
+Tarayıcı:
+- http://localhost:4173
 
-`http://localhost:4173`
+> Eğer `4173` doluysa farklı port kullanabilirsin (ör. `4174`).
 
-## Özellikler (v1)
+## İçerik Güncelleme
+- Portfolyo metinleri ve dosya içerikleri: `script.js`
+- Görsel düzen / responsive: `styles.css`
+- Sayfa iskeleti: `index.html`
 
-- JetBrains IDE benzeri shell
-- Sol tarafta multi-module project explorer (`:app`, `:core:*`, `:feature:*`, `:benchmark`)
-- Explorer üstünde `Collapse All` / `Expand All` butonları
-- Tek editor sekmesi (dosya tıklayınca içerik değişir)
-- Alt terminal paneli (`help`, `open projects`, `run`, `debug`, `stop`, `ls`, `whoami`, `clear`)
-- `Run` ile IDE sola kayar ve sağda Android emulator açılır, `Debug` ile debugger modu aktive olur
-- Emulator içinde `projects/profile/contact` mini ekranları arasında alt tab ve action butonlarıyla geçiş
-- `open projects`, `open profile`, `open contact` komutları emulator ekranını da senkron değiştirir
-- Status bar + canlı saat
-
-## Kişiselleştirme
-
-- İçerikleri `script.js` içindeki `files` objesinden değiştir.
-- İsim/ünvan/iletişim satırlarını gerçek bilgilerle güncelle.
-- Sonraki adımda proje kartlarını `editor` içine sekmeli case study olarak ekleyebilirsin.
+## Not
+Bu proje framework gerektirmez; tek sayfa statik web yapısındadır.
