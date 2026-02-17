@@ -619,6 +619,9 @@ let emulatorTimerB;
 let isDebugSession = false;
 let activeFeature = 'projects';
 let isTerminalOpen = false;
+let hasAutoRunTriggered = false;
+
+const AUTO_RUN_DELAY_MS = 900;
 
 function clearEmulatorTimers() {
   clearTimeout(emulatorTimerA);
@@ -725,6 +728,25 @@ function stopEmulator() {
   bootLayer.classList.remove('done');
   appLayer.classList.remove('ready');
   appendOutput('Emulator stopped.');
+}
+
+function triggerAutoRun() {
+  if (hasAutoRunTriggered || document.body.classList.contains('run-mode')) return;
+  hasAutoRunTriggered = true;
+  appendOutput(`Auto-starting emulator in ${AUTO_RUN_DELAY_MS}ms...`);
+  setTimeout(() => {
+    if (!document.body.classList.contains('run-mode')) {
+      startEmulator({ debug: false });
+    }
+  }, AUTO_RUN_DELAY_MS);
+}
+
+function scheduleAutoRunAfterInitialization() {
+  if (document.readyState === 'complete') {
+    triggerAutoRun();
+    return;
+  }
+  window.addEventListener('load', triggerAutoRun, { once: true });
 }
 
 function expandParents(node) {
@@ -1022,3 +1044,4 @@ applyProjectTreeIcons();
 setActiveFeature(activeFeature);
 syncTerminalToggleUI();
 renderFile('mainActivity');
+scheduleAutoRunAfterInitialization();

@@ -16,11 +16,12 @@ A personal portfolio website designed to replace a traditional CV, presented as 
 - Emulator now opens as a full-screen modal on mobile during run/debug.
 - Added a mobile `Stop` button in the emulator header.
 - Reduced horizontal overflow (especially in the file tree) and improved readability on narrow screens.
+- Emulator now auto-runs shortly after full website initialization completes.
 
 ## File-Level Notes
 - `index.html`: added mobile terminal/emulator control buttons
 - `styles.css`: responsive rules, bottom-sheet behavior, full-screen mobile emulator rules
-- `script.js`: mobile terminal toggle state and mobile emulator stop behavior
+- `script.js`: mobile terminal toggle state, mobile emulator stop behavior, and delayed auto-run after initialization
 - `README.md`: simplified
 
 ## Suggested Next Steps
