@@ -507,6 +507,9 @@ const fileKeyIndex = Object.keys(files).reduce((acc, key) => {
   return acc;
 }, {});
 
+const kotlinTokenRegex =
+  /(@[A-Za-z_][A-Za-z0-9_]*)|(\b(?:val|var)\b)(\s+)([a-z][A-Za-z0-9_]*)|(\.)([A-Z][A-Za-z0-9_]*)|\b(package|import|class|object|interface|data|sealed|enum|fun|val|var|private|public|internal|override|suspend|const|return|when|if|else|in|is|null|true|false|init|by)\b|\b([A-Z][A-Za-z0-9_]*)\b(?=,)|\b([A-Z][A-Za-z0-9_]*)\b|\b([a-z][A-Za-z0-9_]*)\b(?=\s*=)|\b([a-z][A-Za-z0-9_]*)\b(?=\s*\()|\b(\d+)\b/g;
+
 const fileTree = document.getElementById('fileTree');
 const collapseAllBtn = document.getElementById('collapseAllBtn');
 const expandAllBtn = document.getElementById('expandAllBtn');
@@ -635,11 +638,95 @@ function setProjectTreeState(expanded) {
   });
 }
 
+function isKotlinFile(tabLabel) {
+  return typeof tabLabel === 'string' && /\.kts?$/.test(tabLabel);
+}
+
+function buildTokenNode(token, className) {
+  const node = document.createElement('span');
+  node.className = className;
+  node.textContent = token;
+  return node;
+}
+
+function tokenizeKotlinText(text) {
+  const fragment = document.createDocumentFragment();
+  let lastIndex = 0;
+  let match;
+
+  while ((match = kotlinTokenRegex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      fragment.append(document.createTextNode(text.slice(lastIndex, match.index)));
+    }
+
+    if (match[1]) {
+      fragment.append(buildTokenNode(match[1], 'kotlin-annotation'));
+    } else if (match[2] && match[4]) {
+      fragment.append(buildTokenNode(match[2], 'keyword'));
+      fragment.append(document.createTextNode(match[3]));
+      fragment.append(buildTokenNode(match[4], 'kotlin-variable'));
+    } else if (match[5] && match[6]) {
+      fragment.append(document.createTextNode(match[5]));
+      fragment.append(buildTokenNode(match[6], 'kotlin-enum'));
+    } else if (match[7]) {
+      fragment.append(buildTokenNode(match[7], 'keyword'));
+    } else if (match[8]) {
+      fragment.append(buildTokenNode(match[8], 'kotlin-enum'));
+    } else if (match[9]) {
+      fragment.append(buildTokenNode(match[9], 'type'));
+    } else if (match[10]) {
+      fragment.append(buildTokenNode(match[10], 'kotlin-variable'));
+    } else if (match[11]) {
+      fragment.append(buildTokenNode(match[11], 'kotlin-func'));
+    } else if (match[12]) {
+      fragment.append(buildTokenNode(match[12], 'kotlin-number'));
+    }
+
+    lastIndex = kotlinTokenRegex.lastIndex;
+  }
+
+  if (lastIndex < text.length) {
+    fragment.append(document.createTextNode(text.slice(lastIndex)));
+  }
+
+  kotlinTokenRegex.lastIndex = 0;
+  return fragment;
+}
+
+function highlightKotlinContent(htmlContent) {
+  const wrapper = document.createElement('div');
+  wrapper.innerHTML = htmlContent;
+  const walker = document.createTreeWalker(wrapper, NodeFilter.SHOW_TEXT);
+  const nodesToTokenize = [];
+
+  while (walker.nextNode()) {
+    const textNode = walker.currentNode;
+    const parent = textNode.parentElement;
+    if (!parent || !textNode.nodeValue || !textNode.nodeValue.trim()) continue;
+
+    if (
+      parent.closest(
+        '.comment, .value, .keyword, .type, .kotlin-annotation, .kotlin-func, .kotlin-number, .kotlin-variable, .kotlin-enum'
+      )
+    ) {
+      continue;
+    }
+
+    nodesToTokenize.push(textNode);
+  }
+
+  nodesToTokenize.forEach((textNode) => {
+    textNode.replaceWith(tokenizeKotlinText(textNode.nodeValue));
+  });
+
+  return wrapper.innerHTML;
+}
+
 function renderFile(key) {
   const file = files[key];
   if (!file) return;
 
-  codeBlock.innerHTML = file.content;
+  codeBlock.innerHTML = isKotlinFile(file.tab) ? highlightKotlinContent(file.content) : file.content;
   activeTab.textContent = file.tab;
   statusFile.textContent = file.status;
 

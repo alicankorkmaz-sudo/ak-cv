@@ -18,6 +18,15 @@
   --accent: #9bcb78;
   --accent-soft: rgba(155, 203, 120, 0.15);
   --warn: #d0ae74;
+  --code-keyword: #8eb6ff;
+  --code-type: #c5a8eb;
+  --code-value: #a8d18a;
+  --code-comment: #7f90aa;
+  --code-annotation: #d7b070;
+  --code-func: #7cc9be;
+  --code-number: #f09c7f;
+  --code-variable: #9ec2ff;
+  --code-enum: #e4c17a;
   --stage-height: min(880px, 96vh);
   --stage-offset-y: calc((100vh - var(--stage-height)) / 2);
   --run-ide-width: min(1030px, 63vw);
@@ -437,19 +446,39 @@ body.run-mode .ide-shell {
 }
 
 .keyword {
-  color: #8eb6ff;
+  color: var(--code-keyword);
 }
 
 .type {
-  color: #c79bf7;
+  color: var(--code-type);
 }
 
 .value {
-  color: #a8d18a;
+  color: var(--code-value);
 }
 
 .comment {
-  color: #7f90aa;
+  color: var(--code-comment);
+}
+
+.kotlin-annotation {
+  color: var(--code-annotation);
+}
+
+.kotlin-func {
+  color: var(--code-func);
+}
+
+.kotlin-number {
+  color: var(--code-number);
+}
+
+.kotlin-variable {
+  color: var(--code-variable);
+}
+
+.kotlin-enum {
+  color: var(--code-enum);
 }
 
 .terminal-wrap {
