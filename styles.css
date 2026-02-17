@@ -20,6 +20,12 @@
   --warn: #d0ae74;
   --stage-height: min(880px, 96vh);
   --stage-offset-y: calc((100vh - var(--stage-height)) / 2);
+  --run-ide-width: min(1030px, 63vw);
+  --run-emulator-width: min(470px, 34vw);
+  --run-panel-gap: clamp(18px, 2vw, 34px);
+  --run-layout-width: calc(var(--run-ide-width) + var(--run-emulator-width) + var(--run-panel-gap));
+  --run-edge-offset: max(0.6vw, calc((100vw - var(--run-layout-width)) / 2));
+  --run-center-y: calc(var(--stage-offset-y) + (var(--stage-height) / 2));
 
   --shadow-ambient: 0 16px 34px rgba(0, 0, 0, 0.35);
   --shadow-soft: 0 8px 22px rgba(0, 0, 0, 0.28);
@@ -64,13 +70,19 @@ body {
   display: grid;
   grid-template-rows: 44px 34px 1fr 210px 30px;
   box-shadow: var(--shadow-ambient);
-  transition: width 420ms cubic-bezier(0.2, 0.7, 0, 1), margin 420ms cubic-bezier(0.2, 0.7, 0, 1), box-shadow 220ms ease;
+  transition: width 420ms cubic-bezier(0.2, 0.7, 0, 1), margin 420ms cubic-bezier(0.2, 0.7, 0, 1),
+    left 420ms cubic-bezier(0.2, 0.7, 0, 1), top 420ms cubic-bezier(0.2, 0.7, 0, 1),
+    transform 420ms cubic-bezier(0.2, 0.7, 0, 1), box-shadow 220ms ease;
   transform-origin: center center;
 }
 
 body.run-mode .ide-shell {
-  width: min(1030px, 65vw);
-  margin: var(--stage-offset-y) 0 var(--stage-offset-y) 0.6vw;
+  position: absolute;
+  top: var(--run-center-y);
+  left: var(--run-edge-offset);
+  width: var(--run-ide-width);
+  margin: 0;
+  transform: translateY(-50%);
   box-shadow: 0 20px 44px rgba(0, 0, 0, 0.42);
 }
 
@@ -522,9 +534,9 @@ body.run-mode .ide-shell {
 
 .emulator-panel {
   position: absolute;
-  top: var(--stage-offset-y);
+  top: var(--run-center-y);
   right: 1vw;
-  width: min(470px, 34vw);
+  width: var(--run-emulator-width);
   height: var(--stage-height);
   padding: 12px;
   border-radius: 16px;
@@ -536,14 +548,15 @@ body.run-mode .ide-shell {
   background: linear-gradient(180deg, #181f2d, #141922);
   box-shadow: var(--shadow-ambient);
   opacity: 0;
-  transform: translateX(44px) scale(0.98);
+  transform: translateY(-50%) translateX(44px) scale(0.98);
   pointer-events: none;
   transition: opacity 250ms ease, transform 450ms cubic-bezier(0.2, 0.7, 0, 1);
 }
 
 body.run-mode .emulator-panel {
+  right: var(--run-edge-offset);
   opacity: 1;
-  transform: translateX(0) scale(1);
+  transform: translateY(-50%) translateX(0) scale(1);
   pointer-events: auto;
 }
 
@@ -877,6 +890,10 @@ body.debug-mode .compose-mode-badge {
   :root {
     --stage-height: 100vh;
     --stage-offset-y: 0px;
+    --run-ide-width: min(860px, 56vw);
+    --run-emulator-width: min(400px, 42vw);
+    --run-panel-gap: clamp(10px, 1.6vw, 16px);
+    --run-edge-offset: max(0px, calc((100vw - var(--run-layout-width)) / 2));
   }
 
   .ide-shell {
@@ -897,13 +914,10 @@ body.debug-mode .compose-mode-badge {
     margin: 0 8px 8px;
   }
 
-  .emulator-panel {
-    width: min(400px, 42vw);
-  }
-
   body.run-mode .ide-shell {
-    width: min(860px, 56vw);
-    margin: 0 0 0 0;
+    width: var(--run-ide-width);
+    left: var(--run-edge-offset);
+    margin: 0;
   }
 }
 
@@ -921,6 +935,10 @@ body.debug-mode .compose-mode-badge {
   }
 
   body.run-mode .ide-shell {
+    position: relative;
+    top: auto;
+    left: auto;
+    transform: none;
     width: 100vw;
     margin: 0;
   }
