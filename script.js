@@ -33,8 +33,8 @@ class MainActivity : ComponentActivity() {
 
   when (destination) {
     PortfolioDestination.Projects -> ProjectsRoute(
-      title = <span class="value">"Featured Projects"</span>,
-      subtitle = <span class="value">"Shipped Android products with measurable impact"</span>,
+      title = <span class="value">"Career Highlights"</span>,
+      subtitle = <span class="value">"LinkedIn-based timeline (latest to past)"</span>,
       ctaLabel = <span class="value">"Open Profile"</span>,
       onOpenProfile = { destination = PortfolioDestination.Profile },
     )
@@ -366,12 +366,20 @@ class ProjectsViewModel(
   ctaLabel: String,
   onOpenProfile: () -> Unit,
 ) {
+  <span class="keyword">val</span> highlights = listOf(
+    <span class="value">"Current - adesso Turkey (Mobile Software Architect)"</span>,
+    <span class="value">"Pre-adesso - Android roles across Istanbul, Levent, Ankara, and Huawei Turkey R&D contexts"</span>,
+    <span class="value">"Past - internship to senior Android ownership over 8+ years"</span>,
+  )
+
   Column(
-    verticalArrangement = Arrangement.Center,
-    horizontalAlignment = Alignment.CenterHorizontally,
+    verticalArrangement = Arrangement.spacedBy(8.dp),
   ) {
     Text(title)
     Text(subtitle)
+    highlights.forEach { item ->
+      Text(<span class="value">"• $item"</span>)
+    }
     Button(onClick = onOpenProfile) { Text(ctaLabel) }
   }
 }
@@ -401,7 +409,9 @@ dependencies {
 @Composable
 <span class="keyword">fun</span> ProfileScreen(onOpenContact: () -> Unit) {
   Text(<span class="value">"Alican Korkmaz"</span>)
-  Text(<span class="value">"Android Developer"</span>)
+  Text(<span class="value">"Mobile Software Architect @ adesso Turkey"</span>)
+  Text(<span class="value">"8+ years Android • 2K followers • 500+ connections"</span>)
+  Text(<span class="value">"Passionate clean coder. Lifelong learner."</span>)
   Button(onClick = onOpenContact) {
     Text(<span class="value">"Contact"</span>)
   }
@@ -430,8 +440,9 @@ dependencies {
 
 @Composable
 <span class="keyword">fun</span> ContactScreen(onBackToProjects: () -> Unit) {
+  Text(<span class="value">"akorkmaz@pm.me"</span>)
   Text(<span class="value">"linkedin.com/in/alicankorkmaz"</span>)
-  Text(<span class="value">"github.com/alicankorkmaz"</span>)
+  Text(<span class="value">"x.com/alikorkmaz_apk"</span>)
   Button(onClick = onBackToProjects) {
     Text(<span class="value">"Back to Projects"</span>)
   }
@@ -892,7 +903,7 @@ function handleCommand(rawInput) {
 
   switch (cmd.toLowerCase()) {
     case 'help':
-      appendOutput('Commands: help, ls, open <alias>, run, debug, stop, clear, whoami');
+      appendOutput('Commands: help, ls, open <alias>, run, debug, stop, clear, whoami, social');
       appendOutput('Aliases: main, application, app, settings, coreui, projects, profile, contact, benchmark');
       break;
     case 'ls':
@@ -911,7 +922,12 @@ function handleCommand(rawInput) {
       break;
     }
     case 'whoami':
-      appendOutput('Android developer focused on multi-module, feature-based architecture and clean boundaries.');
+      appendOutput('Mobile Software Architect at adesso Turkey focused on Kotlin, Compose, and feature-based architecture.');
+      break;
+    case 'social':
+      appendOutput('LinkedIn: https://www.linkedin.com/in/alicankorkmaz/');
+      appendOutput('X: https://x.com/alikorkmaz_apk');
+      appendOutput('Open links from the Contact screen.');
       break;
     case 'run':
       startEmulator({ debug: false });

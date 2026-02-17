@@ -898,6 +898,8 @@ body.debug-mode .compose-mode-badge {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  overflow-y: auto;
+  padding-right: 2px;
 }
 
 .compose-screen.is-active {
@@ -939,6 +941,18 @@ body.debug-mode .compose-mode-badge {
 .compose-card p {
   font-size: 11px;
   color: #9bb0cd;
+}
+
+.compose-link {
+  color: #cfe2ff;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(157, 176, 205, 0.35);
+  transition: border-color 150ms ease, color 150ms ease;
+}
+
+.compose-link:hover {
+  color: #d8efc8;
+  border-color: rgba(155, 203, 120, 0.58);
 }
 
 .compose-profile-chip-wrap {
