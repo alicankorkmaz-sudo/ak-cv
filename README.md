@@ -3,7 +3,7 @@
 A personal portfolio website that mimics an Android Studio / IntelliJ workflow.
 
 ## Live Site
-- https://alicankorkmaz-sudo.github.io/ak-cv/
+- https://alicankorkmaz-sudo.github.io/portfolio/
 
 ## Run Locally
 ```bash
