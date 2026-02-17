@@ -1,24 +1,24 @@
 # Alican Korkmaz Portfolio
 
-Android Studio / IntelliJ hissi veren, CV yerine geçen kişisel portfolio sitesi.
+A personal portfolio website that mimics an Android Studio / IntelliJ workflow.
 
-## Canlı Site
+## Live Site
 - https://alicankorkmaz-sudo.github.io/ak-cv/
 
-## Lokal Çalıştırma
+## Run Locally
 ```bash
 python3 -m http.server 4173
 ```
 
-Tarayıcı:
+Open in browser:
 - http://localhost:4173
 
-> Eğer `4173` doluysa farklı port kullanabilirsin (ör. `4174`).
+> If port `4173` is already in use, run with a different port (for example `4174`).
 
-## İçerik Güncelleme
-- Portfolyo metinleri ve dosya içerikleri: `script.js`
-- Görsel düzen / responsive: `styles.css`
-- Sayfa iskeleti: `index.html`
+## Where To Edit
+- Portfolio copy and file contents: `script.js`
+- Visual styling and responsive behavior: `styles.css`
+- Page structure: `index.html`
 
-## Not
-Bu proje framework gerektirmez; tek sayfa statik web yapısındadır.
+## Notes
+This is a static single-page site with no framework dependency.

@@ -1009,7 +1009,7 @@ if (typeof mobileViewportQuery.addEventListener === 'function') {
 
 function updateClock() {
   const now = new Date();
-  clock.textContent = now.toLocaleTimeString('tr-TR', {
+  clock.textContent = now.toLocaleTimeString('en-US', {
     hour: '2-digit',
     minute: '2-digit'
   });
