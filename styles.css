@@ -18,7 +18,8 @@
   --accent: #9bcb78;
   --accent-soft: rgba(155, 203, 120, 0.15);
   --warn: #d0ae74;
-  --stage-offset-y: 2vh;
+  --stage-height: min(880px, 96vh);
+  --stage-offset-y: calc((100vh - var(--stage-height)) / 2);
 
   --shadow-ambient: 0 16px 34px rgba(0, 0, 0, 0.35);
   --shadow-soft: 0 8px 22px rgba(0, 0, 0, 0.28);
@@ -54,7 +55,7 @@ body {
 
 .ide-shell {
   width: min(1540px, 98vw);
-  height: min(880px, 96vh);
+  height: var(--stage-height);
   margin: var(--stage-offset-y) auto;
   background: var(--bg-2);
   border: 1px solid var(--border-quiet);
@@ -524,7 +525,7 @@ body.run-mode .ide-shell {
   top: var(--stage-offset-y);
   right: 1vw;
   width: min(470px, 34vw);
-  height: min(880px, 96vh);
+  height: var(--stage-height);
   padding: 12px;
   border-radius: 16px;
   border: 1px solid var(--border);
@@ -874,6 +875,7 @@ body.debug-mode .compose-mode-badge {
 
 @media (max-width: 1024px) {
   :root {
+    --stage-height: 100vh;
     --stage-offset-y: 0px;
   }
 
