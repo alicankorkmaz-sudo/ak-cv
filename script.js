@@ -368,7 +368,6 @@ class ProjectsViewModel(
 ) {
   <span class="keyword">val</span> highlights = listOf(
     <span class="value">"Current - adesso Turkey (Mobile Software Architect)"</span>,
-    <span class="value">"Pre-adesso - Android roles across Istanbul, Levent, Ankara, and Huawei Turkey R&D contexts"</span>,
     <span class="value">"Past - internship to senior Android ownership over 8+ years"</span>,
   )
 
